@@ -34,25 +34,58 @@ struct CardView: View {
     
     var body: some View {
         GeometryReader(content: { geometry in
-            ZStack {
-                VStack {
-                    ForEach(1...3, id: \.self) {_ in
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 25).stroke(.red, lineWidth: 4)
-                            RoundedRectangle(cornerRadius: 25).stripes()
+            if card.count == 2 {
+                ZStack {
+                    VStack {
+                        ForEach(1...card.count, id: \.self) {_ in
+                            createCardView(card).padding(4)
                         }
-                        
-//                        ZStack {
-//                            SquiggleShape().stroke(.red, lineWidth: 4)
-//                            SquiggleShape().stripes()
-//                        }
-                            .padding(4)
                     }
+                    .padding(6)
                 }
-                .padding(6)
+                .padding(.vertical)
+                .cardify()
+            } else {
+                ZStack {
+                    VStack {
+                        ForEach(1...3, id: \.self) {num in
+                            if card.count == 1 && (num == 1 || num == 3) {
+                                createCardView(card).padding(4).opacity(0)
+                            } else {
+                                createCardView(card).padding(4)
+                            }
+                        }
+                    }
+                    .padding(6)
+                }
+                .cardify()
             }
-            .cardify()
         })
+    }
+    
+    private func createCardView(_ card: SetGame.Card) -> some View {
+        ZStack {
+            switch card.stripes {
+            case ShapeFill.striped:
+                chooseShape().stroke(card.color, lineWidth: 2)
+                chooseShape().stripes(color: UIColor(card.color))
+            case ShapeFill.cleared:
+                    chooseShape().stroke(card.color, lineWidth: 2)
+            case ShapeFill.filled:
+                    chooseShape().fill(card.color)
+            }
+        }
+    }
+    
+    private func chooseShape() -> some Shape {
+        switch card.shaped {
+        case ShapeCard.diamond:
+            return AnyShape(DiamondShape())
+        case ShapeCard.rectangle:
+            return AnyShape(RoundedRectangle(cornerRadius: 25))
+        case ShapeCard.squiggle:
+            return AnyShape(SquiggleShape())
+        }
     }
     
     private func scale(thatFits size: CGSize) -> CGFloat {

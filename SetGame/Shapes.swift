@@ -64,7 +64,7 @@ struct SquiggleShape: Shape {
     }
 }
 
-
+// Striped pattern for cards
 extension CGImage {
 
     static func generateStripePattern(
@@ -90,31 +90,29 @@ extension CGImage {
 
 extension Shape {
 
-    func stripes(angle: Double = 0, color: UIColor = .black) -> AnyView {
+    func stripes(color: UIColor) -> AnyView {
         guard
-            let stripePattern = CGImage.generateStripePattern()
+            let stripePattern = CGImage.generateStripePattern(colors: (.white, color))
         else { return AnyView(self)}
 
         return AnyView(self.fill(ImagePaint(
             image: Image(decorative: stripePattern, scale: 1.5)))
             .scaleEffect(1.5)
-        .rotationEffect(.degrees(angle))
-        .clipShape(self))
+            .clipShape(self))
     }
 }
 
-//extension Shape {
-//    func fill<Fill: ShapeStyle, Stroke: ShapeStyle>(_ fillStyle: Fill, strokeBorder strokeStyle: Stroke, lineWidth: Double = 1) -> some View {
-//        self
-//            .stroke(strokeStyle, lineWidth: lineWidth)
-//            .background(self.fill(fillStyle))
-//    }
-//}
-//
-//extension InsettableShape {
-//    func fill<Fill: ShapeStyle, Stroke: ShapeStyle>(_ fillStyle: Fill, strokeBorder strokeStyle: Stroke, lineWidth: Double = 1) -> some View {
-//        self
-//            .strokeBorder(strokeStyle, lineWidth: lineWidth)
-//            .background(self.fill(fillStyle))
-//    }
-//}
+struct AnyShape: Shape {
+    init<S: Shape>(_ wrapped: S) {
+        _path = { rect in
+            let path = wrapped.path(in: rect)
+            return path
+        }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        return _path(rect)
+    }
+
+    private let _path: (CGRect) -> Path
+}
