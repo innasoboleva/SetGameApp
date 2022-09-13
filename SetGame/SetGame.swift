@@ -12,19 +12,24 @@ class SetGame: ObservableObject {
     typealias Card = Game.Card
     
     static func createGame() -> Game {
-        // Game(numberOfCards: 16)
-        var game = Game()
-        game.cards.shuffle()
-        for i in 0...15 {
-            game.extraCards.append(game.cards[i])
-            game.cards.remove(at: i)
-        }
-        return game
+        Game()
     }
     
     @Published private var model = SetGame.createGame()
     
     var cards: Array<Card> {
-        return model.extraCards
+        return model.cards
+    }
+    
+    func threeMore() {
+        model.threeMore()
+    }
+    
+    func newGame() {
+        model = SetGame.createGame()
+    }
+    
+    func choose(_ card: Card) {
+        model.choose(card)
     }
 }

@@ -7,16 +7,13 @@
 import SwiftUI
 import Foundation
 
-struct Game /*where CardContent: Equatable*/ {
-    var cards: Array<Card>
-    var extraCards: Array<Card> = []
+struct Game {
+    private(set) var cards: Array<Card> = []
+    private(set) var extraCards: Array<Card>
     
     init() {
-        cards = []
+        extraCards = []
         
-//        for index in 0..<numberOfCards {
-//            cards.append(Card(id: index))
-//        }
         let shapes = [ShapeCard.diamond, ShapeCard.rectangle, ShapeCard.squiggle]
         let fillingShape = [ShapeFill.striped, ShapeFill.cleared, ShapeFill.filled]
         let colorShape = [Color.red, Color.blue, Color.purple]
@@ -25,13 +22,83 @@ struct Game /*where CardContent: Equatable*/ {
             for someShape in shapes {
                 for filling in fillingShape {
                     for col in colorShape {
-                        cards.append(Card(id: count, stripes: filling, color: col, count: number, shaped: someShape))
+                        extraCards.append(Card(id: count, stripes: filling, color: col, count: number, shaped: someShape))
                         count += 1
                     }
                 }
             }
         }
+        extraCards.shuffle()
+        for i in 0...15 {
+            cards.append(extraCards[i])
+        }
+        for _ in 0...15 {
+            extraCards.remove(at: 0)
+        }
     }
+    
+    mutating func choose(_ card: Card) {
+        if let chosenIndex = cards.firstIndex(where: {$0.id == card.id}) {
+            cards[chosenIndex].isPicked.toggle()
+        }
+        
+        let pickedCards = cards.indices.filter({ cards[$0].isPicked })
+        if pickedCards.count == 3 {
+            let frt = pickedCards[0]
+            let scd = pickedCards[1]
+            let thr = pickedCards[2]
+            if ((cards[frt].shaped == cards[scd].shaped && cards[frt].shaped == cards[thr].shaped) || (cards[frt].shaped != cards[scd].shaped && cards[frt].shaped != cards[thr].shaped && cards[scd].shaped != cards[thr].shaped))
+                &&
+                ((cards[frt].stripes == cards[scd].stripes && cards[frt].stripes == cards[thr].stripes) || (cards[frt].stripes != cards[scd].stripes && cards[frt].stripes != cards[thr].stripes && cards[scd].stripes != cards[thr].stripes))
+                &&
+                ((cards[frt].color == cards[scd].color && cards[frt].color == cards[thr].color) || (cards[frt].color != cards[scd].color && cards[frt].color != cards[thr].color && cards[scd].color != cards[thr].color))
+                &&
+                ((cards[frt].count == cards[scd].count && cards[frt].count == cards[thr].count) || (cards[frt].count != cards[scd].count && cards[frt].count != cards[thr].count && cards[scd].count != cards[thr].count))
+            {
+                for i in pickedCards {
+                    cards[i].isMatched = true
+                }
+                for _ in 0...3 {
+                    if let toRemove = cards.indices.first(where: { cards[$0].isMatched }) {
+                        cards.remove(at: toRemove)
+                    }
+                }
+                if cards.count < Const.cardsVisible {
+                    addCards()
+                }
+            } else {
+                for i in pickedCards {
+                    cards[i].isPicked = false
+                }
+            }
+        }
+    }
+    
+    mutating func addCards() {
+        let count = extraCards.count
+        if count > 0 && count >= 3 {
+            for i in 0...2 {
+                cards.append(extraCards[i])
+            }
+            for _ in 0...2 {
+                extraCards.remove(at: 0)
+            }
+        } else {
+            for i in 0..<count {
+                cards.append(extraCards[i])
+            }
+            for _ in 0..<count {
+                extraCards.remove(at: 0)
+            }
+        }
+    }
+    
+    mutating func threeMore() {
+        if cards.count <= Const.cardsVisible {
+            addCards()
+        }
+    }
+
     
     func index(of card: Card) -> Int? {
         for index in 0..<cards.count {
@@ -48,6 +115,12 @@ struct Game /*where CardContent: Equatable*/ {
         let color: Color
         let count: Int
         let shaped: ShapeCard
+        var isPicked: Bool = false
+        var isMatched: Bool = false
+    }
+    
+     struct Const {
+        static let cardsVisible = 16
     }
 }
 enum ShapeCard {

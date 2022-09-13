@@ -21,6 +21,7 @@ struct DiamondShape: Shape {
         p.addLine(to: secondPoint)
         p.addLine(to: thirdPoint)
         p.addLine(to: lastPoint)
+        p.addLine(to: startingPoint)
         
         return p
     }

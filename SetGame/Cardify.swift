@@ -9,18 +9,14 @@ import SwiftUI
 
 struct Cardify: ViewModifier {
     
-//    var isFaceUp: Bool
+    var isPicked: Bool
     
     func body(content: Content) -> some View {
         ZStack {
             let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
-           // if isFaceUp {
-             //   shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
-//            } else {
-//                shape.fill()
-//            }
-            content.opacity(1)
+            
+            content.opacity(isPicked ? 0.5 : 1)
         }
     }
     
@@ -31,7 +27,7 @@ struct Cardify: ViewModifier {
 }
 
 extension View {
-    func cardify() -> some View {
-        self.modifier(Cardify())
+    func cardify(isPicked: Bool) -> some View {
+        self.modifier(Cardify(isPicked: isPicked))
     }
 }

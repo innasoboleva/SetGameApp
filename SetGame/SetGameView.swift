@@ -14,6 +14,10 @@ struct SetGameView: View {
         AspectVGrid(items: viewModel.cards, aspectRatio: (2/3), content: { card in
             cardView(for: card)
                 .padding(1)
+        }, button1: {
+            viewModel.threeMore()
+        }, button2: {
+            viewModel.newGame()
         })
         .padding()
     }
@@ -22,6 +26,9 @@ struct SetGameView: View {
     private func cardView(for card: SetGame.Card) -> some View {
         CardView(card)
             .padding(4)
+            .onTapGesture {
+                viewModel.choose(card)
+        }
     }
 }
 
@@ -44,7 +51,7 @@ struct CardView: View {
                     .padding(6)
                 }
                 .padding(.vertical)
-                .cardify()
+                .cardify(isPicked: card.isPicked)
             } else {
                 ZStack {
                     VStack {
@@ -58,7 +65,7 @@ struct CardView: View {
                     }
                     .padding(6)
                 }
-                .cardify()
+                .cardify(isPicked: card.isPicked)
             }
         })
     }
@@ -98,8 +105,6 @@ struct CardView: View {
     
     private struct DrawingConstants {
         static let fontScale: CGFloat = 0.7
-//        static let piePadding: CGFloat = 5
-//        static let pieOpacity: CGFloat = 0.5
         static let fontSize: CGFloat = 10
     }
 }

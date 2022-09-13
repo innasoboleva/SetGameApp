@@ -11,11 +11,16 @@ struct AspectVGrid<Item, ItemView>: View where ItemView: View, Item: Identifiabl
     var items: [Item]
     var aspectRatio: CGFloat
     var content: (Item) -> ItemView
+    var button1: () -> Void
+    var button2: () -> Void
     
-    init(items: [Item], aspectRatio: CGFloat, @ViewBuilder content: @escaping (Item) -> ItemView) {
+    init(items: [Item], aspectRatio: CGFloat, @ViewBuilder content: @escaping (Item) -> ItemView,
+         button1: @escaping () -> Void, button2: @escaping () -> Void) {
         self.items = items
         self.aspectRatio = aspectRatio
         self.content = content
+        self.button1 = button1
+        self.button2 = button2
     }
     
     var body: some View {
@@ -27,6 +32,11 @@ struct AspectVGrid<Item, ItemView>: View where ItemView: View, Item: Identifiabl
                         content(item).aspectRatio(aspectRatio, contentMode: .fit)
                     }
                 }
+            }
+            HStack {
+                Button("Add cards", action: button1)
+                Spacer()
+                Button("New game", action: button2)
             }
             Spacer(minLength: 0)
         }
