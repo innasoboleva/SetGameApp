@@ -34,9 +34,21 @@ struct AspectVGrid<Item, ItemView>: View where ItemView: View, Item: Identifiabl
                 }
             }
             HStack {
-                Button("Add cards", action: button1)
+                Button(action: button1) {
+                    Text("Add cards")
+                    .padding(10)
+                    .foregroundColor(.white)
+                    .background(Color.orange)
+                    .cornerRadius(20)
+                }
                 Spacer()
-                Button("New game", action: button2)
+                Button(action: button2){
+                    Text("New game")
+                    .padding(10)
+                    .foregroundColor(.white)
+                    .background(Color.green)
+                    .cornerRadius(20)
+                }
             }
             Spacer(minLength: 0)
         }
