@@ -61,7 +61,9 @@ struct Game {
                 if cards.count <= Const.cardsVisible {
                     addCard(at: pickedCards)
                 } else {
-                    removeCards()
+                    for _ in 0...2 {
+                        removeCards()
+                    }
                 }
             } else {
                 for i in pickedCards {
@@ -89,14 +91,15 @@ struct Game {
             for _ in 0..<count {
                 extraCards.remove(at: 0)
             }
-            removeCards()
+            for _ in 0..<2 {
+                removeCards()
+            }
         }
     }
     
     mutating func removeCards() {
-        let toRemove = cards.indices.filter({ cards[$0].isMatched })
-        for i in toRemove {
-            cards.remove(at: i)
+        if let toRemove = cards.indices.first(where: {cards[$0].isMatched}) {
+            cards.remove(at: toRemove)
         }
     }
     
